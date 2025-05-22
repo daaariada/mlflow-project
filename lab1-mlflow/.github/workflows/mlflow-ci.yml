@@ -1,0 +1,19 @@
+name: MLflow CI/CD Pipeline
+on: [push]  # Запуск при пуше в репозиторий
+
+jobs:
+  test-mlflow:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Start services
+        run: |
+          docker-compose up -d
+          sleep 10  # Ждём запуска контейнеров
+
+      - name: Test image upload and MLflow logging
+        run: |
+              # Проверяем MLflow
+              MLFLOW_RUNS=$(curl -s http://localhost:5001/api/2.0/mlflow/runs/search)
+              echo "$MLFLOW_RUNS" | grep "detected_objects"
